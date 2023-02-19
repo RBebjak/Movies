@@ -52,6 +52,18 @@ def __check_post__(post_keys):
 
     return True
 
+@app.route('/movies/<int:movie_id>', methods=['GET'])
+def get_movie(movie_id):
+    movie = db.get_by_id(movie_id)
+
+    if not movie:
+        return Response(
+            NOT_FOUND[0],
+            status=NOT_FOUND[1]
+        )
+
+    return jsonify(movie)
+
 
 if __name__ == '__main__':
     app.run()
