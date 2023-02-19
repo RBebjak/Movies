@@ -1,45 +1,46 @@
 #!/bin/python
 
 from flask import Flask
-import requests
-import json
 import sqlite3
+import json
 
 app = Flask(__name__)
 
+
 class DatabaseAccess:
     def __init__(self):
-        self.con = sqlite3.connect("movies.db")
-        self.cur = self.con.cursor()
-        self.cur.execute("CREATE TABLE movie(id, title, description, release_year)")
+        self.cur = self.cursor()
+        self.cur.execute("""CREATE TABLE movie
+                        (id integer, title text, 
+                        description text, release_year integer)""")
 
     def get_database(self):
         res = self.cur.execute("SELECT * FROM movies")
         records = res.fetchone()
         for row in records:
-            print("id: ", row[0])
-            print("title: ", row[1])
-            print("description: ", row[2])
-            print("release_year: ", row[3])
+            result = json.dumps(row, indent = 2)
+        return result
 
     def get_by_id(self, id):
         res = self.cur.execute(f"SELECT * FROM movies WHERE movies.id = {id}")
         record = res.fetchone()
-        print("id: ", record[0])
-        print("title: ", record[1])
-        print("description: ", record[2])
-        print("release_year: ", record[3])
+        return json.dumps(record, indent = 2)
 
+    def control(self):
+        pass
+    
     def insert(self, id, title, descr, releas_year):
         self.cur.execute(f"""INSERT INTO movie VALUES
                         ({id}, {title}, {descr}, {releas_year})""")
 
-@app.route("/")
 
+@app.route("/")
 def index():
-    table = DatabaseAccess{1, "Matrix", "SFFDF", 2020}
-    result = json.dumps(result)
-    return result
+    database = sqlite3.connect("movies.db")
+    _ = DatabaseAccess(database)
+    
+    
+
 
 if __name__ == '__main__':
     app.run()
