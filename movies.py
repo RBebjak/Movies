@@ -1,42 +1,22 @@
 #!/bin/python
 
-from flask import Flask
-import sqlite3
+from flask import Flask, request, jsonify
 import json
+from.database_movies import DatabaseAccess
 
 app = Flask(__name__)
 
+database = DatabaseAccess()
 
-class DatabaseAccess:
-    def __init__(self):
-        self.cur = self.cursor()
-        self.cur.execute("""CREATE TABLE movie
-                        (id integer, title text, 
-                        description text, release_year integer)""")
+@app.route("/movies", methods = ['GET'])
+def get_movie():
+    movie = database.get_database()
 
-    def get_database(self):
-        res = self.cur.execute("SELECT * FROM movies")
-        records = res.fetchone()
-        for row in records:
-            json.dumps(row, indent = 2)
+    return jsonify(movie)
 
-    def get_by_id(self, id):
-        res = self.cur.execute(f"SELECT * FROM movies WHERE movies.id = {id}")
-        record = res.fetchone()
-        json.dumps(record, indent = 2)
-
-    def insert(self, id, title, descr, releas_year):
-        self.cur.execute(f"""INSERT INTO movie VALUES
-                        ({id}, {title}, {descr}, {releas_year})""")
-
-
-@app.route("/")
-def index():
-    database = sqlite3.connect("movies.db")
-    work_place = DatabaseAccess(database)
-    work_place.get_database()
-    
-
+@app.route("/movies", methods = ['POST'])
+def post_movie():
+    movie = request.
 
 if __name__ == '__main__':
     app.run()
