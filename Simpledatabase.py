@@ -1,5 +1,3 @@
-#!/bin/python
-
 class SimpleDatabase():
     def __init__(self):
         self.database = {}
@@ -8,7 +6,7 @@ class SimpleDatabase():
     def get_new_id(self):
         if not self.id_list:
             return 1
-        
+
         return self.id_list[-1] + 1
 
     def log_new_id(self, id):
@@ -40,3 +38,21 @@ class SimpleDatabase():
 
         return movie_entry
 
+    def update(self, id, changes):
+        entry = self.database.get(id, None)
+
+        if not entry:
+            return None
+
+        title = changes.get('title', None)
+        release_year = changes.get('release_year', None)
+        desc = changes.get('description', None)
+
+        if title:
+            entry['title'] = title
+        if release_year:
+            entry['release_year'] = release_year
+        if desc:
+            entry['description'] = desc
+
+        return entry

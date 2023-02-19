@@ -2,7 +2,7 @@
 
 from flask import Flask, Response, request, jsonify
 
-from simple_database import SimpleDatabase
+from Simpledatabase import SimpleDatabase
 
 
 app = Flask(__name__)
@@ -16,6 +16,19 @@ NOT_FOUND = ('Not Found', 404)
 def get_movies():
     movies = db.list()
     return jsonify(movies)
+
+
+@app.route('/movies/<int:movie_id>', methods=['GET'])
+def get_movie(movie_id):
+    movie = db.get_by_id(movie_id)
+
+    if not movie:
+        return Response(
+            NOT_FOUND[0],
+            status=NOT_FOUND[1]
+        )
+
+    return jsonify(movie)
 
 
 @app.route('/movies', methods=['POST'])
@@ -43,6 +56,21 @@ def upload_movie():
     return jsonify(new_movie)
 
 
+@app.route('/movies/<int:movie_id>', methods=['PUT'])
+def update_movie(movie_id):
+    movie = request.json
+
+    changed_entry = db.update(movie_id, movie)
+
+    if not changed_entry:
+        return Response(
+            NOT_FOUND[0],
+            status=NOT_FOUND[1]
+        )
+
+    return jsonify(changed_entry)
+
+
 def __check_post__(post_keys):
     required_keys = ('title', 'release_year')
 
@@ -51,18 +79,6 @@ def __check_post__(post_keys):
             return False
 
     return True
-
-@app.route('/movies/<int:movie_id>', methods=['GET'])
-def get_movie(movie_id):
-    movie = db.get_by_id(movie_id)
-
-    if not movie:
-        return Response(
-            NOT_FOUND[0],
-            status=NOT_FOUND[1]
-        )
-
-    return jsonify(movie)
 
 
 if __name__ == '__main__':
